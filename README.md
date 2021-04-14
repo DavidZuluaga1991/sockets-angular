@@ -1,3 +1,3 @@
 # sockets-angular
-## Frontend - Angular
+## Frontend - Angular 11
 ## Backend - NodeJS

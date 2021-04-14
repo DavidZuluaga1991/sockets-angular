@@ -1,34 +1,58 @@
 import { Injectable } from '@angular/core';
-//import * as Rx from "rxjs/Rx";
+import { Observable, Subject } from 'rxjs';
 import * as web from "rxjs/webSocket";
+import { Message } from 'src/app/core/models/message/message.model';
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
 
-  private subject = web.webSocket("ws://localhost:8081");
+  private subject = web.webSocket("ws://localhost:8081"); 
+  private wsSubject = web.webSocket({
+      url: 'ws://localhost:8081',
+  //Apply any transformation of your choice.
+      serializer: msg => JSON.stringify({channel: "webDevelopment", msg: msg})
+  });
+  // private subjectg: Subject<MessageEvent>;
+
+  private message: Message;
 
   constructor() { }
 
-  public pushMenssage() {
+  public openConnection() {
     this.subject.subscribe();
-    // Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
-    // since no connection was established!
-     
-    this.subject.next({ 'message': 'some message'});
-    // This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
-     
-    this.subject.complete(); // Closes the connection.
-     
-    this.subject.error({code: 4000, reason: 'I think our app just broke!'});
-    // Also closes the connection, but let's the server know that this closing is caused by some error.
   }
 
-  public getMenssage() {
-    this.subject.subscribe(
-      msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
-      err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
-      () => console.log('complete') // Called when connection is closed (for whatever reason).
-    );
+  public pushMenssage(data: Message) {
+    this.subject.next(data);
+  }
+
+  public closeConnection() {
+    this.subject.complete();
+  }
+
+  public getConectionMenssage(): Observable<unknown> {
+    return this.subject;
+    // this.subject.subscribe(
+    //   (msg: any) => {
+    //     console.log(msg);
+    //     this.message = msg;
+    //   }, // Called whenever there is a message from the server.
+    //   err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
+    //   () => console.log('complete') // Called when connection is closed (for whatever reason).
+    // );
+    // const observableA = this.subject.multiplex(
+    //   () => ({subscribe: 'A'}), // When server gets this message, it will start sending messages for 'A'...
+    //   () => ({unsubscribe: 'A'}), // ...and when gets this one, it will stop.
+    //   message => true // If the function returns `true` message is passed down the stream. Skipped if the function returns false.
+    // );
+    // const subA = observableA.subscribe(messageForA => console.log(messageForA));
+// socket.addEventListener('message', function (event) {
+//   console.log('Message from server', event.data);
+// });
+  }
+
+  public getMenssage(): Message {
+    return this.message;
   }
 }

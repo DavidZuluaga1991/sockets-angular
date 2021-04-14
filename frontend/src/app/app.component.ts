@@ -9,12 +9,6 @@ import { WebsocketService } from './shared/services/websocket/websocket.service'
 export class AppComponent {
   title = 'frontend';
   
-  constructor(private chat: WebsocketService) {
-    this.chat.getMenssage();
-  }
-
-  public sendMsg() {
-    this.chat.pushMenssage();
-  }
+  constructor() {}
 
 }

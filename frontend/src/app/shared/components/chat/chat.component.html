@@ -1,0 +1,22 @@
+<form class="chat" [formGroup]="formChat">
+    <div class="author">
+        <label for="author">Autor</label>
+        <input type="text" name="author" id="author" formControlName="author">
+    </div>
+    <div class="message_data">
+        <div class="text_message {{ getChatColor(m) }}" *ngFor="let m of messages">
+            <div class="shortword">
+                <p>
+                    {{ getShortword(m.author) }}
+                </p>
+            </div>
+            <p class="text">{{ m.message }}</p>
+            <p class="hours">{{ getHour(m.date) }}</p>
+        </div>
+    </div>
+    <div class="message">
+        <label for="message">Mensaje</label>
+        <input type="text" name="message" id="message" formControlName="message">
+    </div>
+    <button type="submit" (click)="sendMsg()">Enviar</button>
+</form>

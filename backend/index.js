@@ -2,23 +2,18 @@ const express = require("express");
 const app = express();
 const websocket = require('ws');
 const servidorWS = new websocket.Server({port: 8081});
+const clients = new Set();
 
-
-servidorWS.on('connection', function connection(ws) {
-    console.log('Cliente conectado');
-    ws.on('message', function incoming(dato) {
-        console.log('Mensaje recibido: ' + dato);
-        servidorWS.clients.forEach(function each(cliente) {
-            console.log(cliente !== ws);
-            if (cliente !== ws && cliente.readyState === websocket.OPEN) {
-                console.log('Enviando Dato');
-                cliente.send(dato);
-            }
-        });
-    });
+servidorWS.on('connection', ws => {
+  ws.on('message', dato => {
+    clients.add(ws);
+    for(let client of clients) {
+      console.log(clients.size);
+      client.send(dato);
+      // clients.delete(client);
+    }
+  });
 });
-
-
 
 // nuestra primera ruta
 app.get('/quotes', (req, res) => {
